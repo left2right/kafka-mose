@@ -47,10 +47,7 @@ start_link(Hosts, Topic) ->
 init([Hosts, Topic]) ->
     PartitionNum = config:get_kafka_partitions_num(Hosts, Topic),
     Offsets = [get_kafka_offset(Hosts, Topic, Pn) || Pn <- lists:seq(0, PartitionNum -1)],
-    %%io:format("offsets ~p ~n",[Offsets]),
     Sum = sum_offsets(Offsets),
-    write_file(Sum, Topic),
-    io:format("offsets  sum~p ~n",[Sum]),
     erlang:send_after(get_check_interval(), self(), trigger_check),
     {ok, #state{hosts = Hosts
               , topic = Topic
@@ -106,11 +103,10 @@ get_check_interval() ->
 
 process_offset(State) ->
     Offsets = [get_kafka_offset(State#state.hosts, State#state.topic, Pn)|| Pn <- lists:seq(0, State#state.partitionNum - 1)],
-    %%io:format("~p offsets:~p ~n",[State#state.topic, Offsets]), 
     Sum = sum_offsets(Offsets),
     Diff = Sum -State#state.offsetsSum,
-    %%write_file(Sum, State#state.topic),
-    write_file(Diff, State#state.topic),
+    Qps = Diff div get_check_interval(),
+    write_file(Qps, State#state.topic),
     {ok, #state{hosts = State#state.hosts
               , topic = State#state.topic
               , partitionNum = State#state.partitionNum
@@ -125,9 +121,12 @@ sum_offsets(List) ->
 write_file(Data, Topic) ->
     FileName = binary:bin_to_list(Topic)++".data",
     {ok,Fd} = file:open(FileName, [append]),
-    io:format(Fd,"~p ~n",[Data]),
+    io:format(Fd,"~p : ~p ~n",[time_now(),Data]),
     file:close(Fd).
 
-
-
+time_now() ->
+    {{Y,Mo,D},{H,Mi,S}} = calendar:now_to_local_time(erlang:now()),
+    Date = erlang:integer_to_list(Y)++"/"++erlang:integer_to_list(Mo)++"/"++erlang:integer_to_list(D),
+    Time = erlang:integer_to_list(H)++":"++erlang:integer_to_list(Mi)++":"++erlang:integer_to_list(S),
+    Date++"-"++Time.
 
