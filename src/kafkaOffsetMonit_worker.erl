@@ -105,7 +105,7 @@ process_offset(State) ->
     Offsets = [get_kafka_offset(State#state.hosts, State#state.topic, Pn)|| Pn <- lists:seq(0, State#state.partitionNum - 1)],
     Sum = sum_offsets(Offsets),
     Diff = Sum -State#state.offsetsSum,
-    Qps = Diff div get_check_interval(),
+    Qps = (Diff*1000) div get_check_interval(),
     write_file(Qps, State#state.topic),
     {ok, #state{hosts = State#state.hosts
               , topic = State#state.topic
