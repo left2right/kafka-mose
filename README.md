@@ -1,6 +1,6 @@
-kafka-offset-monitor
+kafka-mose
 ================
-kafka-offset-monitor is an Erlang build application that monitors kafka offset changed during last few minutes(which could be configured in config file) ,and then compute the ops during last few minutes .
+kafka-mose is an Erlang build application that monitors kafka offset changed during last few minutes(which could be configured in config file) ,and then compute the ops during last few minutes .
 
 Requirements
 ---------------
@@ -9,7 +9,7 @@ Requirements
 
 confi file
 ---------------
-kafka-offset-monitor config file is kafkaOffsetMonit.config, in this file, some config variables explained here:
+kafka-mose config file is kafkaMose.config, in this file, some config variables explained here:
 
 kafka_consumer_hosts: the host name and port of kafka
 
@@ -21,15 +21,15 @@ kafka_consumer_max_bytes: the max bytes in one time kafka consume , default is 1
 
 check_interval: configured the time unit monitored
 
-pid_path: store the pid of kafka-offset-monitor in file
+pid_path: store the pid of kafka-mose in file
 
 log_root: the directory for lager logs
 
 other viriables just keep the default
 
-Building kafka-offset-monitor
+Building kafka-mose
 ---------------
-1. git clone kafka-offset-monitor source files
+1. git clone kafka-mose source files
 
  git clone https://github.com/left2right/kafka-offsets-monitor.gitt
 
@@ -37,16 +37,16 @@ Building kafka-offset-monitor
  
  make
 
- this will use rebar get application dependens, compile the application and generate the application, you could find kafka-offset-monitor directory under rel directory which is used for runing kafkaOffsetMonit...  
+ this will use rebar get application dependens, compile the application and generate the application, you could find kafka-mose directory under rel directory which is used for runing kafkaMose...  
  
-4. configure kafka-offset-monitor 
- edit the sys.config file in rel/kafkaOffsetMonit/release/$APP_VSN/sys.config for specific use, For example:
+4. configure kafka-mose 
+ edit the sys.config file in rel/kafkaMose/release/$APP_VSN/sys.config for specific use, For example:
 
   edit kafka hosts, lager log directory and so on.  
 
-Use kafka-offset-monitor
+Use kafka-mose
 ---------------
-You can use the `kafkaOffsetMonit` command line administration script to start and stop kafkaOffsetMonit. For example:
- - cd ./rel/kafkaOffsetMonit/
- - ./bin/kafkaOffsetMonit start
- - ./bin/kafkaOffsetMonit stop
+You can use the `kafkaMose` command line administration script to start and stop kafkaMose. For example:
+ - cd ./rel/kafkaMose/
+ - ./bin/kafkaMose start
+ - ./bin/kafkaMose stop

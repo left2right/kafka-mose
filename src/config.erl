@@ -15,7 +15,7 @@
 %% ===================================================================
 
 get_kafka_consumer_hosts() ->
-    case application:get_env(kafkaOffsetMonit, kafka_consumer_hosts) of
+    case application:get_env(kafkaMose, kafka_consumer_hosts) of
 	{ok, KafkaHosts} ->
             KafkaHosts;
 	undefined ->
@@ -23,10 +23,10 @@ get_kafka_consumer_hosts() ->
     end.
 
 set_kafka_consumer_hosts(Hosts) ->
-    application:set_env(kafkaOffsetMonit, kafka_consumer_hosts, Hosts).
+    application:set_env(kafkaMose, kafka_consumer_hosts, Hosts).
 
 get_kafka_consumer_topics() ->
-    case application:get_env(kafkaOffsetMonit, kafka_consumer_topics) of
+    case application:get_env(kafkaMose, kafka_consumer_topics) of
 	{ok, KafkaConsumerTopic} ->
             KafkaConsumerTopic;
 	undefined ->
@@ -34,7 +34,7 @@ get_kafka_consumer_topics() ->
     end.
 
 add_kafka_consumer_topic(Topic) ->
-    application:set_env(kafkaOffsetMonit, kafka_consumer_topic, Topic).
+    application:set_env(kafkaMose, kafka_consumer_topic, Topic).
 
 get_kafka_partitions_num(Hosts, Topic) ->
     case brod:get_metadata(Hosts, [Topic]) of
@@ -45,7 +45,7 @@ get_kafka_partitions_num(Hosts, Topic) ->
     end.
 
 get_pid_file() ->
-    case application:get_env(kafkaOffsetMonit, pid_path) of
+    case application:get_env(kafkaMose, pid_path) of
 	{ok, PidPath} ->
             PidPath;
 	undefined ->

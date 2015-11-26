@@ -1,4 +1,4 @@
-{application, kafkaOffsetMonit,
+{application, kafkaMose,
  [
   {description, ""},
   {vsn, "1"},
@@ -7,6 +7,6 @@
                   kernel,
                   stdlib
                  ]},
-  {mod, { kafkaOffsetMonit_app, []}},
+  {mod, { kafkaMose_app, []}},
   {env, []}
  ]}.

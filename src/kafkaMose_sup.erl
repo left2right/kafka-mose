@@ -1,4 +1,4 @@
--module(kafkaOffsetMonit_sup).
+-module(kafkaMose_sup).
 
 -behaviour(supervisor).
 
@@ -9,7 +9,7 @@
 -export([init/1]).
 
 %% Helper macro for declaring children of supervisor
--define(CHILD(H,T), {T, {kafkaOffsetMonit_worker, start_link, [H, T]}, permanent, brutal_kill, worker, [kafkaOffsetMonit_worker]}).
+-define(CHILD(H,T), {T, {kafkaMose_worker, start_link, [H, T]}, permanent, brutal_kill, worker, [kafkaMose_worker]}).
 -define(TOPICSTABLE, topics_etstable).
 
 

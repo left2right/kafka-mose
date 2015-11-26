@@ -1,4 +1,4 @@
--module(kafkaOffsetMonit_worker).
+-module(kafkaMose_worker).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
 
@@ -93,11 +93,11 @@ get_kafka_offset(KafkaHosts, Topic, Partition) ->
      end.                    
 
 get_check_interval() ->
-    case application:get_env(kafkaOffsetMonit, check_interval) of
+    case application:get_env(kafkaMose, check_interval) of
         {ok, Interval} ->
             Interval;
         undefined ->
-            ?WARNING_MSG("kafka produce interval not defined in config file use default 1000*3600*25(one day)", []),
+            ?WARNING_MSG("kafka consume interval not defined in config file use default 60000)", []),
             ?INTERVAL
     end.
 

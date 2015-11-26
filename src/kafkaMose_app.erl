@@ -1,4 +1,4 @@
--module(kafkaOffsetMonit_app).
+-module(kafkaMose_app).
 
 -behaviour(application).
 
@@ -12,7 +12,7 @@
 start(_StartType, _StartArgs) ->
     config:write_pid_file(),
     logger:start(),
-    kafkaOffsetMonit_sup:start_link().
+    kafkaMose_sup:start_link().
 
 stop(_State) ->
     ok.
