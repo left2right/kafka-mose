@@ -22,6 +22,8 @@
 -include("logger.hrl").
 
 -define(INTERVAL, 60000).
+%%-define(ONEDAY, 86400000).
+-define(ONEDAY, 120000).
 -define(MAX_WAITTIME, 1000).
 -define(MIN_BYTES, 0).
 -define(MAX_BYTES, 100000).
@@ -29,6 +31,7 @@
                , topic            
                , partitionNum
                , offsets             
+               , offsetsAll             
                , offsetsSum             
                , offsetsDiff             
                }).
@@ -49,10 +52,12 @@ init([Hosts, Topic]) ->
     Offsets = [get_kafka_offset(Hosts, Topic, Pn) || Pn <- lists:seq(0, PartitionNum -1)],
     Sum = sum_offsets(Offsets),
     erlang:send_after(get_check_interval(), self(), trigger_check),
+    erlang:send_after(?ONEDAY, self(), trigger_oneday),
     {ok, #state{hosts = Hosts
               , topic = Topic
               , partitionNum = PartitionNum
               , offsets = Offsets
+              , offsetsAll = Sum
               , offsetsSum = Sum
               , offsetsDiff = 0
             }}.
@@ -66,6 +71,10 @@ handle_cast(_Msg, State) ->
 handle_info(trigger_check, State) ->
     {ok, StateNew} = process_offset(State),
     erlang:send_after(get_check_interval(), self(), trigger_check),
+    {noreply, StateNew};
+handle_info(trigger_oneday, State) ->
+    {ok, StateNew} = process_offset_oneday(State),
+    erlang:send_after(?ONEDAY, self(), trigger_oneday),
     {noreply, StateNew};
 handle_info(_Info, State) ->
     {noreply, State}.
@@ -106,20 +115,34 @@ process_offset(State) ->
     Sum = sum_offsets(Offsets),
     Diff = Sum -State#state.offsetsSum,
     Qps = (Diff*1000) div get_check_interval(),
-    write_file(Qps, State#state.topic),
+    write_file("-AVER-QPS", Qps, State#state.topic),
     {ok, #state{hosts = State#state.hosts
               , topic = State#state.topic
               , partitionNum = State#state.partitionNum
               , offsets = Offsets
+              , offsetsAll = State#state.offsetsAll
               , offsetsSum = Sum
               , offsetsDiff = Diff
             }}.
 
+process_offset_oneday(State) ->
+    Offsets = [get_kafka_offset(State#state.hosts, State#state.topic, Pn)|| Pn <- lists:seq(0, State#state.partitionNum - 1)],
+    Sum = sum_offsets(Offsets),
+    Diff = Sum -State#state.offsetsAll,
+    write_file("-ONEDAY-MSG", Diff, State#state.topic),
+    {ok, #state{hosts = State#state.hosts
+              , topic = State#state.topic
+              , partitionNum = State#state.partitionNum
+              , offsets = State#state.offsets
+              , offsetsAll = Sum
+              , offsetsSum = State#state.offsetsSum
+              , offsetsDiff = State#state.offsetsDiff
+            }}.
 sum_offsets(List) ->
     lists:foldl(fun(X, Sum) -> X + Sum end, 0, List).
 
-write_file(Data, Topic) ->
-    FileName = binary:bin_to_list(Topic)++".data",
+write_file(Type, Data, Topic) ->
+    FileName = binary:bin_to_list(Topic)++Type++".data",
     {ok,Fd} = file:open(FileName, [append]),
     io:format(Fd,"~p : ~p ~n",[time_now(),Data]),
     file:close(Fd).
