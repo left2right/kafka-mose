@@ -9,7 +9,7 @@
 -export([init/1]).
 
 %% Helper macro for declaring children of supervisor
--define(CHILD(H,T), {T, {kafkaMose_worker, start_link, [H, T]}, permanent, brutal_kill, worker, [kafkaMose_worker]}).
+-define(CHILD(H,T), {T, {kafkaMose_stats, start_link, [H, T]}, permanent, brutal_kill, worker, [kafkaMose_stats]}).
 -define(TOPICSTABLE, topics_etstable).
 
 
