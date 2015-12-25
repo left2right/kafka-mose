@@ -22,8 +22,7 @@
 -include("logger.hrl").
 
 -define(INTERVAL, 60000).
-%%-define(ONEDAY, 86400000).
--define(ONEDAY, 120000).
+-define(ONEDAY, 86400000).
 -define(MAX_WAITTIME, 1000).
 -define(MIN_BYTES, 0).
 -define(MAX_BYTES, 100000).
