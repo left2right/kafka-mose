@@ -143,9 +143,29 @@ sum_offsets(List) ->
 
 write_file(Type, Data, Topic) ->
     FileName = binary:bin_to_list(Topic)++Type++".data",
+    cover_file(FileName),
     {ok,Fd} = file:open(FileName, [append]),
     io:format(Fd,"~p : ~p ~n",[time_now(),Data]),
     file:close(Fd).
+
+cover_file(FileName) ->
+    case file:read_file_info(FileName) of
+         {_,{file_info,FileSize,_,_,_,_,_,_,_,_,_,_,_,_}} ->
+             if FileSize > 100000000 ->
+                 delete_file(FileName)
+             end;
+         _ ->
+             ?ERROR_MSG("Get ~p fileinfo file size error", [FileName])
+    end.
+
+delete_file(FileName) ->
+    case file:delete(FileName) of
+         ok ->
+            ok;
+         {error, Reason} ->
+             ?ERROR_MSG("Delete ~p file error", [FileName])
+    end.
+
 
 time_now() ->
     {{Y,Mo,D},{H,Mi,S}} = calendar:now_to_local_time(erlang:now()),
